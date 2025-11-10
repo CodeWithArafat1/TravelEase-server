@@ -27,7 +27,7 @@ const client = new MongoClient(uri, {
 
 const server = async () => {
   try {
-    await client.connect();
+    // await client.connect();
     const db = client.db("TravelEase");
     const productCollection = db.collection("vehicles");
     const bookingCollection = db.collection("myBooking");
@@ -46,7 +46,7 @@ const server = async () => {
       res.send(data);
     });
 
-    
+
 
     // find by email
     app.get("/api/myVehicles", async (req, res) => {
@@ -96,7 +96,7 @@ const server = async () => {
       res.send(data);
     });
 
-    // my booking apis
+    // my booking  apis
     app.post("/api/myBooking", async (req, res) => {
       const booking = req.body;
       delete booking._id;
@@ -111,7 +111,7 @@ const server = async () => {
       res.send(data);
     });
 
-    // delete single booking
+    // delete single booking 
     app.delete("/api/myBooking/:id", async (req, res) => {
       const { id } = req.params;
       const query = { _id: new ObjectId(id) };
@@ -119,8 +119,8 @@ const server = async () => {
       res.send(data);
     });
 
-    await client.db("admin").command({ ping: 1 });
-    console.log("mongoDB connected successfully!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("mongoDB connected successfully!");
   } catch (err) {
     console.log(err);
   }
