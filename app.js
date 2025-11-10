@@ -96,7 +96,7 @@ const server = async () => {
     // my booking apis
     app.post("/api/myBooking", async (req, res) => {
       const booking = req.body;
-      delete booking._id
+      delete booking._id;
       const data = await bookingCollection.insertOne(booking);
       res.send(data);
     });
@@ -105,6 +105,14 @@ const server = async () => {
     app.get("/api/myBooking", async (req, res) => {
       const { email } = req.query;
       const data = await bookingCollection.find({ email }).toArray();
+      res.send(data);
+    });
+
+    // delete single booking
+    app.delete("/api/myBooking/:id", async (req, res) => {
+      const { id } = req.params;
+      const query = { _id: new ObjectId(id) };
+      const data = await bookingCollection.deleteOne(query);
       res.send(data);
     });
 
