@@ -30,6 +30,7 @@ const server = async () => {
     await client.connect();
     const db = client.db("TravelEase");
     const productCollection = db.collection("vehicles");
+    const bookingCollection = db.collection("myBooking"); 
 
     // post single vehicle
     app.post("/api/vehicles", async (req, res) => {
@@ -61,13 +62,39 @@ const server = async () => {
       res.send(data);
     });
 
-    // get single product
-   app.get('/api/vehicles/:id', async (req, res)=>{
-    const {id}= req.params
-    const query = {_id: new ObjectId(id)}
-    const data = await productCollection.findOne(query)
-    res.send(data)
-   })
+    // get single vehicle
+    app.get("/api/vehicles/:id", async (req, res) => {
+      const { id } = req.params;
+      const query = { _id: new ObjectId(id) };
+      const data = await productCollection.findOne(query);
+      res.send(data);
+    });
+
+    // delete single vehicle
+    app.delete("/api/vehicles/:id", async (req, res) => {
+      const { id } = req.params;
+      const query = { _id: new ObjectId(id) };
+      const data = await productCollection.deleteOne(query);
+      res.send(data);
+    });
+
+    // update single vehicle
+    app.patch("/api/vehicles/:id", async (req, res) => {
+      const { id } = req.params;
+      const query = { _id: new ObjectId(id) };
+      const vehicles = req.body;
+
+      const update = {
+        $set: {
+          ...vehicles,
+        },
+      };
+      const data = await productCollection.updateOne(query, update);
+      res.send(data);
+    });
+
+    // my booking apis
+    app.post("/api/myBooking", async (req, res) => {});
 
     await client.db("admin").command({ ping: 1 });
     console.log("mongoDB connected successfully!");
