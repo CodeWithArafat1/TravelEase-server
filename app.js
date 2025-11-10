@@ -35,6 +35,7 @@ const server = async () => {
     // post single vehicle
     app.post("/api/vehicles", async (req, res) => {
       const vehicles = req.body;
+      vehicles.createAt = new Date(vehicles.createAt);
       const data = await productCollection.insertOne(vehicles);
       res.send(data);
     });
