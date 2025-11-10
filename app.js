@@ -30,7 +30,7 @@ const server = async () => {
     await client.connect();
     const db = client.db("TravelEase");
     const productCollection = db.collection("vehicles");
-    const bookingCollection = db.collection("myBooking"); 
+    const bookingCollection = db.collection("myBooking");
 
     // post single vehicle
     app.post("/api/vehicles", async (req, res) => {
@@ -94,7 +94,19 @@ const server = async () => {
     });
 
     // my booking apis
-    app.post("/api/myBooking", async (req, res) => {});
+    app.post("/api/myBooking", async (req, res) => {
+      const booking = req.body;
+      delete booking._id
+      const data = await bookingCollection.insertOne(booking);
+      res.send(data);
+    });
+
+    // get booking by email
+    app.get("/api/myBooking", async (req, res) => {
+      const { email } = req.query;
+      const data = await bookingCollection.find({ email }).toArray();
+      res.send(data);
+    });
 
     await client.db("admin").command({ ping: 1 });
     console.log("mongoDB connected successfully!");
