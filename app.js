@@ -27,7 +27,7 @@ const client = new MongoClient(uri, {
 
 const server = async () => {
   try {
-    // await client.connect();
+    await client.connect();
     const db = client.db("TravelEase");
     const productCollection = db.collection("vehicles");
     const bookingCollection = db.collection("myBooking");
@@ -45,8 +45,6 @@ const server = async () => {
       const data = await productCollection.find().toArray();
       res.send(data);
     });
-
-
 
     // find by email
     app.get("/api/myVehicles", async (req, res) => {
@@ -111,7 +109,21 @@ const server = async () => {
       res.send(data);
     });
 
-    // delete single booking 
+    // check booking
+    app.get("/api/checkBooking", async (req, res) => {
+      const { email, vehicleId } = req.query;
+      if (!email && !vehicleId) {
+        return res.send(400).send("Email and Vehicle ID are required.");
+      }
+      const query = {
+        email: email,
+        vehicleId: vehicleId,
+      };
+      const data = await bookingCollection.findOne(query);
+      res.send(data)
+    });
+
+    // delete single booking
     app.delete("/api/myBooking/:id", async (req, res) => {
       const { id } = req.params;
       const query = { _id: new ObjectId(id) };
@@ -119,8 +131,8 @@ const server = async () => {
       res.send(data);
     });
 
-    // await client.db("admin").command({ ping: 1 });
-    // console.log("mongoDB connected successfully!");
+    await client.db("admin").command({ ping: 1 });
+    console.log("mongoDB connected successfully!");
   } catch (err) {
     console.log(err);
   }
