@@ -142,11 +142,24 @@ const server = async () => {
     app.get("/api/myWishlist", async (req, res) => {
       const { email } = req.query;
       const data = await wishlistCollection.find({ email }).toArray();
-      res.send(data)
+      res.send(data);
     });
 
     // checking wish list with email and vehicle
-    
+    app.get("/api/checkWishlist", async (req, res) => {
+      const { email, vehicleId } = req.query;
+      const query = { email: email, vehicleId: vehicleId };
+      const data = await wishlistCollection.findOne(query);
+      res.send(data);
+    });
+
+    // delete single wishlist
+    app.delete("/api/myWishlist/:id", async (req, res) => {
+      const { id } = req.params;
+      const query = { _id: new ObjectId(id) };
+      const data = await wishlistCollection.deleteOne(query);
+      res.send(data);
+    });
 
     await client.db("admin").command({ ping: 1 });
     console.log("mongoDB connected successfully!");
