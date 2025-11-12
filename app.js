@@ -27,10 +27,11 @@ const client = new MongoClient(uri, {
 
 const server = async () => {
   try {
-    // await client.connect();
+    await client.connect();
     const db = client.db("TravelEase");
     const productCollection = db.collection("vehicles");
     const bookingCollection = db.collection("myBooking");
+    const wishlistCollection = db.collection("myWishlist");
 
     // post single vehicle
     app.post("/api/vehicles", async (req, res) => {
@@ -120,7 +121,7 @@ const server = async () => {
         vehicleId: vehicleId,
       };
       const data = await bookingCollection.findOne(query);
-      res.send(data)
+      res.send(data);
     });
 
     // delete single booking
@@ -130,9 +131,25 @@ const server = async () => {
       const data = await bookingCollection.deleteOne(query);
       res.send(data);
     });
+    // my wishlist apis
+    app.post("/api/myWishlist", async (req, res) => {
+      const wishlist = req.body;
+      const data = await wishlistCollection.insertOne(wishlist);
+      res.send(data);
+    });
 
-    // await client.db("admin").command({ ping: 1 });
-    // console.log("mongoDB connected successfully!");
+    // get wishlist by email
+    app.get("/api/myWishlist", async (req, res) => {
+      const { email } = req.query;
+      const data = await wishlistCollection.find({ email }).toArray();
+      res.send(data)
+    });
+
+    // checking wish list with email and vehicle
+    
+
+    await client.db("admin").command({ ping: 1 });
+    console.log("mongoDB connected successfully!");
   } catch (err) {
     console.log(err);
   }
