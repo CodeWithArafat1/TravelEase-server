@@ -15,7 +15,7 @@ app.get("/", (req, res) => {
 });
 
 // mongoDB Connect
-const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.USER_PASSWORD}@cluster0.rklba9n.mongodb.net/?appName=Cluster0`;
+const uri = process.env.DB_URI;
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -27,7 +27,7 @@ const client = new MongoClient(uri, {
 
 const server = async () => {
   try {
-    // await client.connect();
+    await client.connect();
     const db = client.db("TravelEase");
     const productCollection = db.collection("vehicles");
     const bookingCollection = db.collection("myBooking");
@@ -43,8 +43,14 @@ const server = async () => {
 
     // get all vehicle
     app.get("/api/vehicles", async (req, res) => {
-      const data = await productCollection.find().toArray();
-      res.send(data);
+      const { limit = 0, skip = 0 } = req.query;
+      const data = await productCollection
+        .find()
+        .limit(Number(limit))
+        .skip(Number(skip))
+        .toArray();
+      const count = await productCollection.countDocuments();
+      res.send({ data, count });
     });
 
     // find by email
@@ -161,8 +167,8 @@ const server = async () => {
       res.send(data);
     });
 
-    // await client.db("admin").command({ ping: 1 });
-    // console.log("mongoDB connected successfully!");
+    await client.db("admin").command({ ping: 1 });
+    console.log("mongoDB connected successfully!");
   } catch (err) {
     console.log(err);
   }
